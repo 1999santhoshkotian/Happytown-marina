@@ -1,91 +1,87 @@
 <!DOCTYPE html>
+<ht<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Happy Town Voucher</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
-
         .card {
             background: white;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 12px;
+            text-align: center;
             width: 90%;
             max-width: 350px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 0 15px rgba(0,0,0,0.15);
         }
-
-        h1 {
-            color: #ff5722;
-        }
-
-        .voucher {
+        .success {
+            color: green;
             font-size: 22px;
-            margin: 20px 0;
             font-weight: bold;
         }
-
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            font-size: 18px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            background: gray;
-            cursor: not-allowed;
-        }
-
-        .message {
-            margin-top: 20px;
-            font-size: 16px;
+        .error {
             color: red;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            background: #ff9800;
+            color: white;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <h1>🎮 Happy Town</h1>
-    <p class="voucher">₹5 KD Voucher</p>
-
-    <button id="redeemBtn" onclick="redeemVoucher()">Redeem Now</button>
-
-    <div class="message" id="message"></div>
+<div class="card" id="content">
+    <h2>🎮 Happy Town Game Zone</h2>
+    <p>Tap below to redeem your voucher</p>
+    <button onclick="redeemVoucher()">Redeem 5 KD Voucher</button>
 </div>
 
 <script>
-    const redeemed = localStorage.getItem("happyTownVoucher");
+    // Check if voucher is redeemed via cookies
+    function checkVoucherCookie() {
+        return document.cookie.split(';').some((item) => item.trim().startsWith('happyTownRedeemed='));
+    }
 
-    if (redeemed === "used") {
-        document.getElementById("redeemBtn").disabled = true;
-        document.getElementById("message").innerText =
-            "❌ Voucher already redeemed on this device.";
+    // Set a cookie to mark voucher redeemed
+    function setVoucherCookie() {
+        const now = new Date();
+        now.setFullYear(now.getFullYear() + 10); // expire in 10 years
+        document.cookie = "happyTownRedeemed=yes; expires=" + now.toUTCString() + "; path=/";
     }
 
     function redeemVoucher() {
-        localStorage.setItem("happyTownVoucher", "used");
-        document.getElementById("redeemBtn").disabled = true;
-        document.getElementById("message").style.color = "green";
-        document.getElementById("message").innerText =
-            "✅ Voucher redeemed successfully! Show this to counter.";
+        if (localStorage.getItem("happyTownRedeemed") || checkVoucherCookie()) {
+            // Already redeemed
+            document.getElementById("content").innerHTML = `
+                <h2 class="error">❌ Already Redeemed</h2>
+                <p>This device has already redeemed the voucher.</p>
+            `;
+        } else {
+            // First time redeem
+            localStorage.setItem("happyTownRedeemed", "yes");
+            setVoucherCookie();
+            document.getElementById("content").innerHTML = `
+                <h2 class="success">✅ Voucher Redeemed!</h2>
+                <p>You received <b>5 KD</b></p>
+                <p>Show this screen to counter</p>
+            `;
+        }
     }
 </script>
-
 </body>
 </html>
